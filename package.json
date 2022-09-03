@@ -1,0 +1,19 @@
+{
+  "name": "mikecraft",
+  "version": "1.0.0",
+  "description": "A Discord bot for the online status of my friends MC server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NilsRamstoeck/MikeKraft.git"
+  },
+  "author": "Nils Ramstöck",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/NilsRamstoeck/MikeKraft/issues"
+  },
+  "homepage": "https://github.com/NilsRamstoeck/MikeKraft#readme"
+}

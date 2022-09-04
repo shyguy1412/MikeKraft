@@ -1,7 +1,8 @@
-import { ChatInputCommandInteraction, REST, Routes, SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, REST, Routes, SlashCommandBuilder, TextChannel } from "discord.js";
 import { discord_config } from '../.config.json';
+import { addServerToWatch, setOutputTextChannel, setRoleToPing } from "./db";
 
-const {token, applicationId} = discord_config;
+const { token, applicationId } = discord_config;
 
 export const cmdMap = {
     'channel': channelCommand,
@@ -11,24 +12,39 @@ export const cmdMap = {
 
 function channelCommand(interaction: ChatInputCommandInteraction) {
 
-    const channel = interaction.options.getChannel('output');
+    const channel = interaction.options.getChannel('output') as TextChannel;
 
-    interaction.reply({ ephemeral: false, content: channel?.name + " selected" })
+    if (!(channel instanceof TextChannel)) {
+        interaction.reply({ ephemeral: false, content: "Selected channel must be a text channel" });
+        return;
+    }
+
+    // interaction.deferReply();
+    setOutputTextChannel(channel.id, interaction.guildId!)
+        .then(() => interaction.reply({ ephemeral: false, content: `<#${channel.id}> was selected` }))
+        .catch((e) => interaction.reply({ ephemeral: false, content: `Something went wrong, please try again later ${e}` }))
 
 }
 
 function roleCommand(interaction: ChatInputCommandInteraction) {
 
-    const role = interaction.options.getRole('target');
+    const role = interaction.options.getRole('target')!;
 
-    interaction.reply({ ephemeral: false, content: role?.name + " selected" })
+    // interaction.deferReply();
+    setRoleToPing(role.id, interaction.guildId!)
+        .then(() => interaction.reply({ ephemeral: false, content: `<@&${role.id}> was selected` }))
+        .catch(() => interaction.reply({ ephemeral: false, content: `Something went wrong, please try again later` }))
 
 }
 
 function serverCommand(interaction: ChatInputCommandInteraction) {
     const server = interaction.options.getString('server')!;
 
-    interaction.reply({ ephemeral: false, content: server + " selected" })
+
+    // interaction.deferReply();
+    addServerToWatch(server, interaction.guildId!)
+        .then(() => interaction.reply({ ephemeral: false, content: `${server} was added` }))
+        .catch(() => interaction.reply({ ephemeral: false, content: `Something went wrong, please try again later` }))
 }
 
 export function registerCommands() {

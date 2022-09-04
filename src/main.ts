@@ -1,4 +1,6 @@
+#!/usr/bin/env ts-node
 import { discord_config } from '../.config.json';
+
 import { Client, REST, Routes, TextChannel } from 'discord.js';
 import { cmdMap } from './commands';
 import { request } from 'https';

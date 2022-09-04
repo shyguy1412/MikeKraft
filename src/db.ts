@@ -29,9 +29,6 @@ export async function validateDatabase() {
     catch (e) {
         throw e;
     }
-    finally {
-        await client.close();
-    }
 }
 
 export async function addGuildToDatabase(guildId: string) {
@@ -48,9 +45,6 @@ export async function addGuildToDatabase(guildId: string) {
     catch (e) {
         throw e;
     }
-    finally {
-        await client.close();
-    }
 }
 
 export async function removeGuildFromDatabase(guildId: string) {
@@ -64,9 +58,6 @@ export async function removeGuildFromDatabase(guildId: string) {
     catch (e) {
         throw e;
     }
-    finally {
-        await client.close();
-    }
 }
 
 export async function getAllGuildsFromDatabase() {
@@ -79,9 +70,6 @@ export async function getAllGuildsFromDatabase() {
     }
     catch (e) {
         throw e;
-    }
-    finally {
-        await client.close();
     }
 }
 
@@ -112,9 +100,6 @@ export async function addServerToWatch(address: string, guildId: string) {
     catch (e) {
         throw e;
     }
-    finally {
-        await client.close();
-    }
 }
 
 export async function removeServerToWatch(address: string, guildId: string) {
@@ -144,9 +129,6 @@ export async function removeServerToWatch(address: string, guildId: string) {
     catch (e) {
         throw e;
     }
-    finally {
-        await client.close();
-    }
 }
 
 export async function listServersToWatch(guildId: string) {
@@ -167,13 +149,11 @@ export async function listServersToWatch(guildId: string) {
     catch (e) {
         throw e;
     }
-    finally {
-        await client.close();
-    }
 }
 
 export async function setServerStatus(address: string, status: boolean, guildId: string) {
     try {
+        
         await client.connect();
 
         const cursor = await client.db(DATABASE).collection(GUILDS_COLLECTION).findOne({
@@ -199,9 +179,6 @@ export async function setServerStatus(address: string, status: boolean, guildId:
     catch (e) {
         throw e;
     }
-    finally {
-        await client.close();
-    }
 }
 
 export async function getServerStatus(address: string, guildId: string) {
@@ -220,9 +197,6 @@ export async function getServerStatus(address: string, guildId: string) {
     }
     catch (e) {
         throw e;
-    }
-    finally {
-        await client.close();
     }
 }
 
@@ -250,9 +224,6 @@ export async function setRoleToPing(role: string, guildId: string) {
     catch (e) {
         throw e;
     }
-    finally {
-        await client.close();
-    }
 }
 
 export async function getRoleToPing(guildId: string) {
@@ -271,9 +242,6 @@ export async function getRoleToPing(guildId: string) {
     }
     catch (e) {
         throw e;
-    }
-    finally {
-        await client.close();
     }
 }
 
@@ -301,9 +269,6 @@ export async function setOutputTextChannel(channel: string, guildId: string) {
     catch (e) {
         throw e;
     }
-    finally {
-        await client.close();
-    }
 }
 
 export async function getOutputTextChannel(guildId: string) {
@@ -322,8 +287,5 @@ export async function getOutputTextChannel(guildId: string) {
     }
     catch (e) {
         throw e;
-    }
-    finally {
-        await client.close();
     }
 }

@@ -24,6 +24,7 @@ rest.get(Routes.userGuilds())
         )
     });
 
+
 //joined a server
 client.on("guildCreate", guild => {
     addGuildToDatabase(guild.id)
@@ -52,7 +53,7 @@ validateDatabase().then(() => client.login(token));
 
 const { startService } = checkAllServersService();
 
-// startService();
+startService();
 
 function checkAllServersService() {
 
@@ -60,7 +61,10 @@ function checkAllServersService() {
 
     return {
         startService: () => {
-            timeout = setTimeout(checkAllServers, 10000);
+            timeout = setTimeout(() => {
+                checkAllServers();
+                startService();
+            }, 5000);
         },
         stopService: () => {
             clearTimeout(timeout);
@@ -74,21 +78,35 @@ async function checkAllServers() {
 
     guilds.forEach(guild => {
         const guildId = guild.guildId;
-        listServersToWatch(guildId)
-            .then(servers => servers.forEach(async (server:string) => {
-                const new_status = checkServer(server);
-                const old_status = getServerStatus(server, guildId);
-                if (await new_status != await old_status) {
-                    setServerStatus(server, await new_status, guildId);
-                    sendStatusNotification(server, await new_status, guildId);
-                }
-            }))
+        checkServersForGuild(guildId);
     })
 }
 
+let guildAccessLock: string[] = [];
+async function checkServersForGuild(guildId: string) {
+    if (guildAccessLock.includes(guildId)) {
+        return;
+    }
+
+    guildAccessLock.push(guildId);
+
+    const servers = await listServersToWatch(guildId);
+
+    for (const [server, old_status] of Object.entries(servers)) {
+        const new_status = await checkServer(server);
+        if (new_status != old_status) {
+            await setServerStatus(server, new_status, guildId);
+            sendStatusNotification(server, new_status, guildId);
+        }
+    }
+
+    guildAccessLock = guildAccessLock.filter((item) => item != guildId);
+}
+
 async function sendStatusNotification(server: string, status: boolean, guildId: string) {
-    const targetChannelId = getOutputTextChannel(guildId);
+    const channelId = getOutputTextChannel(guildId);
     const targetRole = getRoleToPing(guildId);
-    const targetChannel = <TextChannel>client.guilds.cache.get(guildId)?.channels.cache.get(await targetChannelId);
+    const targetGuild = await client.guilds.fetch(guildId);
+    const targetChannel = await targetGuild.channels.fetch(await channelId) as TextChannel;
     targetChannel.send(`<@&${await targetRole}> Server ${server} went ${status ? 'online' : 'offline'}`);
 }

@@ -1,4 +1,4 @@
-import { APIRole, Role, TextChannel } from 'discord.js';
+import { APIRole, Guild, Role, TextChannel } from 'discord.js';
 import { MongoClient, WithId } from 'mongodb';
 import { mongodb_config } from '../.config.json';
 
@@ -31,16 +31,18 @@ export async function validateDatabase() {
     }
 }
 
-export async function addGuildToDatabase(guildId: string) {
+export async function addGuildToDatabase(guild: Guild) {
     try {
         await client.connect();
 
+
         await client.db(DATABASE).collection(GUILDS_COLLECTION).insertOne({
-            guildId,
+            guildId: guild.id,
             servers: {},
-            role: 'everyone',
-            channel: ''
+            role: guild.roles.everyone,
+            channel: guild.systemChannel
         })
+        return true;
     }
     catch (e) {
         throw e;
@@ -153,7 +155,7 @@ export async function listServersToWatch(guildId: string) {
 
 export async function setServerStatus(address: string, status: boolean, guildId: string) {
     try {
-        
+
         await client.connect();
 
         const cursor = await client.db(DATABASE).collection(GUILDS_COLLECTION).findOne({
@@ -248,7 +250,7 @@ export async function getRoleToPing(guildId: string) {
 export async function setOutputTextChannel(channel: string, guildId: string) {
     try {
         await client.connect();
-        
+
         const cursor = await client.db(DATABASE).collection(GUILDS_COLLECTION).findOne({
             guildId
         });
@@ -274,7 +276,7 @@ export async function setOutputTextChannel(channel: string, guildId: string) {
 export async function getOutputTextChannel(guildId: string) {
     try {
         await client.connect();
-                
+
         const cursor = await client.db(DATABASE).collection(GUILDS_COLLECTION).findOne({
             guildId
         });

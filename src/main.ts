@@ -29,7 +29,7 @@ rest.get(Routes.userGuilds())
 
 //joined a server
 client.on("guildCreate", guild => {
-    addGuildToDatabase(guild.id)
+    addGuildToDatabase(guild)
         .catch(err => console.error(err))
 });
 

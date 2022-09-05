@@ -11,9 +11,14 @@ export function checkServer(url: string) {
             response.on('data', (chunk: Buffer) => body += chunk);
             response.on('end', () => {
 
-                const data = JSON.parse(body);
+                try {
+                    const data = JSON.parse(body);
 
-                resolve(data.online);
+                    resolve(data.online);
+                }
+                catch (e) {
+                    resolve(false);
+                }
             })
             response.on('error', reject);
             response.on('timeout', reject);
